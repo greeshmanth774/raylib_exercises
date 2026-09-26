@@ -25,15 +25,17 @@ function update() {
     xCoordinate = xCoordinate + dx;
 }
 
+const particalWidth = 100;
+const particle_x = 250;
 function draw() {
 
     r.BeginDrawing();
     r.ClearBackground(r.BLACK);
-    r.DrawRectangle(250, yCoordinate, 50, windowHeight, r.BLUE)
+    r.DrawRectangle(particle_x, yCoordinate, particalWidth, windowHeight, r.BLUE)
     r.DrawRectangle(xCoordinate, yCoordinate, width, windowHeight, color);
     r.DrawRectangle
     r.EndDrawing();
-    y
+
 }
 
 function teardown() {

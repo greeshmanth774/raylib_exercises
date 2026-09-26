@@ -1,14 +1,14 @@
 const r = require("raylib");
 
-const windowWidth = 300;
-const windowHeight = 200;
+const windowWidth = 600;
+const windowHeight = 400;
 
 let xCoordinate = 10;
 const yCoordinate = 0;
 const width = 30;
 const color = r.WHITE;
 
-let change = 2;
+let dx = 2;
 
 function running() {
     return !r.WindowShouldClose();
@@ -20,19 +20,20 @@ function setup() {
 function update() {
 
     if (xCoordinate <= 0 || xCoordinate >= windowWidth - width) {
-        change = change * (-1);
+        dx = dx * (-1);
     }
-    xCoordinate = xCoordinate + change;
+    xCoordinate = xCoordinate + dx;
 }
 
 function draw() {
 
     r.BeginDrawing();
     r.ClearBackground(r.BLACK);
+    r.DrawRectangle(250, yCoordinate, 50, windowHeight, r.BLUE)
     r.DrawRectangle(xCoordinate, yCoordinate, width, windowHeight, color);
     r.DrawRectangle
     r.EndDrawing();
-
+    y
 }
 
 function teardown() {

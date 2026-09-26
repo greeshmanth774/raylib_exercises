@@ -1,19 +1,38 @@
 const r = require("raylib");
 
+const windowWidth = 300;
+const windowHeight = 200;
+
+let xCoordinate = 10;
+const yCoordinate = 0;
+const width = 30;
+const color = r.WHITE;
+
+let change = 2;
+
 function running() {
     return !r.WindowShouldClose();
 }
-
 function setup() {
-    // prepare the sketch
+    r.InitWindow(windowWidth, windowHeight, "first");
+    r.SetTargetFPS(60);
 }
-
 function update() {
-    // change the state
+
+    if (xCoordinate <= 0 || xCoordinate >= windowWidth - width) {
+        change = change * (-1);
+    }
+    xCoordinate = xCoordinate + change;
 }
 
 function draw() {
-    // draw the current state
+
+    r.BeginDrawing();
+    r.ClearBackground(r.BLACK);
+    r.DrawRectangle(xCoordinate, yCoordinate, width, windowHeight, color);
+    r.DrawRectangle
+    r.EndDrawing();
+
 }
 
 function teardown() {

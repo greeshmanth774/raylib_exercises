@@ -12,6 +12,7 @@ const detector1_width = 60;
 const detector1_start = 0;
 const detector1_end = (windowWidth / 2) - detector1_width;
 
+
 let detector2_xCoordinate = windowWidth / 2 + 10;
 let detector2_color = r.WHITE;
 let detector2_speed = 2;
@@ -19,13 +20,23 @@ const detector2_width = 60;
 const detector2_start = windowWidth / 2;
 const detector2_end = windowWidth - detector2_width;
 
-const particleColor = r.BLUE;
 
+const particle1_Color = r.BLUE;
 const particle1_x = 250;
 const particle1Width = 150;
 
+const particle2_Color = r.BLUE;
 const particle2_x = 100;
 const particle2_width = 20;
+
+function running() {
+    return !r.WindowShouldClose();
+}
+
+function setup() {
+    r.InitWindow(windowWidth, windowHeight, "particle_detector");
+    r.SetTargetFPS(60);
+}
 
 function selectColor(start1, end1, start2, end2) {
     if (start2 >= start1 && start2 <= end1) {
@@ -37,16 +48,15 @@ function selectColor(start1, end1, start2, end2) {
     return r.WHITE;
 }
 
-function objectDetection(xCoordinate, width) {
+function objectDetection(xCoordinate, width, particle1_x, particle1_Width, particle2_x, particle2_width) {
     let color = selectColor(xCoordinate, xCoordinate + width,
-        particle1_x, particle1_x + particle1Width);
+        particle1_x, particle1_x + particle1_Width);
     if (color === r.WHITE) {
         color = selectColor(xCoordinate, xCoordinate + width,
             particle2_x, particle2_x + particle2_width);
     }
     return color;
 }
-
 
 
 function updatePosition(xCoordinate, speed) {
@@ -61,14 +71,6 @@ function updateDirection(xCoordinate, startValue, endValue, speed) {
 }
 
 
-function running() {
-    return !r.WindowShouldClose();
-}
-
-function setup() {
-    r.InitWindow(windowWidth, windowHeight, "particle_detector");
-    r.SetTargetFPS(60);
-}
 
 function update() {
 
@@ -80,8 +82,8 @@ function update() {
     detector2_speed = updateDirection(detector2_xCoordinate, detector2_start,
         detector2_end, detector2_speed);
 
-    detector1_color = objectDetection(detector1_xCoordinate, detector1_width);
-    detector2_color = objectDetection(detector2_xCoordinate, detector2_width);
+    detector1_color = objectDetection(detector1_xCoordinate, detector1_width, particle1_x, particle1_Width, particle2_x, particle2_width);
+    detector2_color = objectDetection(detector2_xCoordinate, detector2_width, particle1_x, particle1_Width, particle2_x, particle2_width);
 }
 
 
@@ -90,8 +92,8 @@ function draw() {
 
     r.BeginDrawing();
     r.ClearBackground(r.BLACK);
-    r.DrawRectangle(particle1_x, yCoordinate, particle1Width, windowHeight, particleColor);
-    r.DrawRectangle(particle2_x, yCoordinate, particle2_width, windowHeight, particleColor);
+    r.DrawRectangle(particle1_x, yCoordinate, particle1Width, windowHeight, particle1_Color);
+    r.DrawRectangle(particle2_x, yCoordinate, particle2_width, windowHeight, particle2_Color);
     r.DrawRectangle(detector1_xCoordinate, yCoordinate, detector1_width, windowHeight, detector1_color);
     r.DrawRectangle(detector2_xCoordinate, yCoordinate, detector2_width, windowHeight, detector2_color);
     r.EndDrawing();

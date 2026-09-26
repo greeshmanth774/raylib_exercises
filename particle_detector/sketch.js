@@ -5,9 +5,18 @@ const windowWidth = 600;
 const windowHeight = 400;
 
 
+
+let horizontalDetector1_xCoordinate = 0;
+let horizontalDetector1_yCoordinate = 10;
+let horizontalDetector1_color = r.WHITE;
+let horizontalDetector1_change = 3;
+const horizontalDetector1_height = 30;
+const horizontalDetector1_start = 0;
+const horizontalDetector1_end = windowHeight - horizontalDetector1_height;
+
 let detector1_xCoordinate = 10;
 let detector1_color = r.WHITE;
-let detector1_speed = 3;
+let detector1_change = 3;
 const detector1_width = 60;
 const detector1_start = 0;
 const detector1_end = (windowWidth / 2) - detector1_width;
@@ -15,11 +24,14 @@ const detector1_end = (windowWidth / 2) - detector1_width;
 
 let detector2_xCoordinate = windowWidth / 2 + 10;
 let detector2_color = r.WHITE;
-let detector2_speed = 2;
+let detector2_change = 2;
 const detector2_width = 60;
 const detector2_start = windowWidth / 2;
 const detector2_end = windowWidth - detector2_width;
 
+const Horizontalparticle1_Color = r.BLUE;
+const Horizontalparticle1_y = 100;
+const Horizontalparticle1_Height = 90;
 
 const particle1_Color = r.BLUE;
 const particle1_x = 100;
@@ -36,27 +48,27 @@ function running() {
 function setup() {
     r.InitWindow(windowWidth, windowHeight, "particle_detector");
     r.SetTargetFPS(60);
+    r.SetTraceLogLevel(r.LOG_NONE);
 }
 
-function selectColor(start1, end1, start2, end2) {
-    if (start2 >= start1 && start2 <= end1) {
-        return true;
+function selectColor(range1_start, range1_end, range2_start, range2_end) {
+    if (range2_start >= range1_start && range2_start <= range1_end) {
+        return r.RED;
     }
-    if (start1 >= start2 && start1 <= end2) {
-        return true;
+    if (range1_start >= range2_start && range1_start <= range2_end) {
+        return r.RED;
     }
-    return false;
+    return r.WHITE;
 }
 
 function objectDetection(xCoordinate, width, particle1_x, particle1_Width, particle2_x, particle2_width) {
-    let case1 = selectColor(xCoordinate, xCoordinate + width,
+    let color = selectColor(xCoordinate, xCoordinate + width,
         particle1_x, particle1_x + particle1_Width);
-
-    let case2 = selectColor(xCoordinate, xCoordinate + width,
-        particle2_x, particle2_x + particle2_width);
-
-    if (case1 || case2) return r.RED;
-    return r.WHITE;
+    if (color == r.WHITE) {
+        color = selectColor(xCoordinate, xCoordinate + width,
+            particle2_x, particle2_x + particle2_width);
+    }
+    return color;
 }
 
 
@@ -75,16 +87,22 @@ function updateDirection(xCoordinate, startValue, endValue, speed) {
 
 function update() {
 
-    detector1_xCoordinate = updatePosition(detector1_xCoordinate, detector1_speed);
-    detector1_speed = updateDirection(detector1_xCoordinate, detector1_start,
-        detector1_end, detector1_speed);
+    detector1_xCoordinate = updatePosition(detector1_xCoordinate, detector1_change);
+    detector1_change = updateDirection(detector1_xCoordinate, detector1_start,
+        detector1_end, detector1_change);
 
-    detector2_xCoordinate = updatePosition(detector2_xCoordinate, detector2_speed);
-    detector2_speed = updateDirection(detector2_xCoordinate, detector2_start,
-        detector2_end, detector2_speed);
+    detector2_xCoordinate = updatePosition(detector2_xCoordinate, detector2_change);
+    detector2_change = updateDirection(detector2_xCoordinate, detector2_start,
+        detector2_end, detector2_change);
+
+    horizontalDetector1_yCoordinate = updatePosition(horizontalDetector1_yCoordinate, horizontalDetector1_change);
+    horizontalDetector1_change = updateDirection(horizontalDetector1_yCoordinate, horizontalDetector1_start,
+        horizontalDetector1_end, horizontalDetector1_change);
 
     detector1_color = objectDetection(detector1_xCoordinate, detector1_width, particle1_x, particle1_Width, particle2_x, particle2_width);
     detector2_color = objectDetection(detector2_xCoordinate, detector2_width, particle1_x, particle1_Width, particle2_x, particle2_width);
+    horizontalDetector1_color = selectColor(horizontalDetector1_yCoordinate, horizontalDetector1_yCoordinate + horizontalDetector1_height,
+        Horizontalparticle1_y, Horizontalparticle1_y + Horizontalparticle1_Height);
 }
 
 
@@ -95,8 +113,12 @@ function draw() {
     r.ClearBackground(r.BLACK);
     r.DrawRectangle(particle1_x, yCoordinate, particle1_Width, windowHeight, particle1_Color);
     r.DrawRectangle(particle2_x, yCoordinate, particle2_width, windowHeight, particle2_Color);
+    r.DrawRectangle(horizontalDetector1_xCoordinate, Horizontalparticle1_y, windowWidth, Horizontalparticle1_Height
+        , Horizontalparticle1_Color);
     r.DrawRectangle(detector1_xCoordinate, yCoordinate, detector1_width, windowHeight, detector1_color);
     r.DrawRectangle(detector2_xCoordinate, yCoordinate, detector2_width, windowHeight, detector2_color);
+    r.DrawRectangle(horizontalDetector1_xCoordinate, horizontalDetector1_yCoordinate,
+        windowWidth, horizontalDetector1_height, horizontalDetector1_color);
     r.EndDrawing();
 
 }

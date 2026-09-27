@@ -4,8 +4,6 @@ const yCoordinate = 0;
 const windowWidth = 600;
 const windowHeight = 400;
 
-
-
 let horizontalDetector1_xCoordinate = 0;
 let horizontalDetector1_yCoordinate = 10;
 let horizontalDetector1_color = r.WHITE;
@@ -20,7 +18,6 @@ let detector1_change = 3;
 const detector1_width = 60;
 const detector1_start = 0;
 const detector1_end = (windowWidth / 2) - detector1_width;
-
 
 let detector2_xCoordinate = windowWidth / 2 + 10;
 let detector2_color = r.WHITE;
@@ -51,23 +48,24 @@ function setup() {
     r.SetTraceLogLevel(r.LOG_NONE);
 }
 
-function selectColor(range1_start, range1_end, range2_start, range2_end) {
-    if (range2_start >= range1_start && range2_start <= range1_end) {
-        return r.RED;
-    }
-    if (range1_start >= range2_start && range1_start <= range2_end) {
-        return r.RED;
-    }
+function singleParticleCheck(range1_start, range1_end, range2_start, range2_end) {
+
+    if (range2_start >= range1_start && range2_start <= range1_end) return r.RED;
+    if (range1_start >= range2_start && range1_start <= range2_end) return r.RED;
+
     return r.WHITE;
 }
 
-function objectDetection(xCoordinate, width, particle1_x, particle1_Width, particle2_x, particle2_width) {
-    let color = selectColor(xCoordinate, xCoordinate + width,
+function doubleParticleCheck(xCoordinate, width, particle1_x, particle1_Width, particle2_x, particle2_width) {
+
+    let color = singleParticleCheck(xCoordinate, xCoordinate + width,
         particle1_x, particle1_x + particle1_Width);
+
     if (color == r.WHITE) {
-        color = selectColor(xCoordinate, xCoordinate + width,
+        color = singleParticleCheck(xCoordinate, xCoordinate + width,
             particle2_x, particle2_x + particle2_width);
     }
+
     return color;
 }
 
@@ -90,19 +88,19 @@ function update() {
     detector1_xCoordinate = updatePosition(detector1_xCoordinate, detector1_change);
     detector1_change = updateDirection(detector1_xCoordinate, detector1_start,
         detector1_end, detector1_change);
+    detector1_color = doubleParticleCheck(detector1_xCoordinate, detector1_width, particle1_x, particle1_Width, particle2_x, particle2_width);
 
     detector2_xCoordinate = updatePosition(detector2_xCoordinate, detector2_change);
     detector2_change = updateDirection(detector2_xCoordinate, detector2_start,
         detector2_end, detector2_change);
+    detector2_color = doubleParticleCheck(detector2_xCoordinate, detector2_width, particle1_x, particle1_Width, particle2_x, particle2_width);
 
     horizontalDetector1_yCoordinate = updatePosition(horizontalDetector1_yCoordinate, horizontalDetector1_change);
     horizontalDetector1_change = updateDirection(horizontalDetector1_yCoordinate, horizontalDetector1_start,
         horizontalDetector1_end, horizontalDetector1_change);
-
-    detector1_color = objectDetection(detector1_xCoordinate, detector1_width, particle1_x, particle1_Width, particle2_x, particle2_width);
-    detector2_color = objectDetection(detector2_xCoordinate, detector2_width, particle1_x, particle1_Width, particle2_x, particle2_width);
-    horizontalDetector1_color = selectColor(horizontalDetector1_yCoordinate, horizontalDetector1_yCoordinate + horizontalDetector1_height,
+    horizontalDetector1_color = singleParticleCheck(horizontalDetector1_yCoordinate, horizontalDetector1_yCoordinate + horizontalDetector1_height,
         Horizontalparticle1_y, Horizontalparticle1_y + Horizontalparticle1_Height);
+
 }
 
 

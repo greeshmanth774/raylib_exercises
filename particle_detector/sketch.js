@@ -1,105 +1,96 @@
 const r = require("raylib");
-const yCoordinate = 0;
+const s = require("./scanner.js");
+
+const hd = require("./hd.js");
+const d1 = require("./d1.js");
+const d2 = require("./d2.js");
+
+const hp = require("./hp.js");
+const p1 = require("./p1.js");
+const p2 = require("./p2.js");
+
 
 const windowWidth = 600;
 const windowHeight = 400;
+const yCoordinate = 0;
 
-let horizontalDetector1_xCoordinate = 0;
-let horizontalDetector1_yCoordinate = 10;
-let horizontalDetector1_color = r.WHITE;
-let horizontalDetector1_change = 3;
-const horizontalDetector1_height = 30;
-const horizontalDetector1_start = 0;
-const horizontalDetector1_end = windowHeight - horizontalDetector1_height;
 
-let detector1_xCoordinate = 10;
-let detector1_color = r.WHITE;
-let detector1_change = 3;
-const detector1_width = 60;
-const detector1_start = 0;
-const detector1_end = (windowWidth / 2) - detector1_width;
+hd.end = windowHeight - hd.height;
 
-let detector2_xCoordinate = windowWidth / 2 + 10;
-let detector2_color = r.WHITE;
-let detector2_change = 2;
-const detector2_width = 60;
-const detector2_start = windowWidth / 2;
-const detector2_end = windowWidth - detector2_width;
+d1.end = (windowWidth / 2) - d1.width;
 
-const Horizontalparticle1_Color = r.BLUE;
-const Horizontalparticle1_y = 100;
-const Horizontalparticle1_Height = 90;
+d2.end = windowWidth - d2.width;
+d2.start = windowWidth / 2;
+d2.x = windowWidth / 2;
 
-const particle1_Color = r.BLUE;
-const particle1_x = 100;
-const particle1_Width = 90;
 
-const particle2_Color = r.BLUE;
-const particle2_x = 400;
-const particle2_width = 60;
 
 function running() {
     return !r.WindowShouldClose();
 }
 
 function setup() {
+    r.SetTraceLogLevel(r.LOG_NONE);
     r.InitWindow(windowWidth, windowHeight, "particle_detector");
     r.SetTargetFPS(60);
-    r.SetTraceLogLevel(r.LOG_NONE);
 }
-
-function singleParticleCheck(range1_start, range1_end, range2_start, range2_end) {
-
-    if (range2_start >= range1_start && range2_start <= range1_end) return r.RED;
-    if (range1_start >= range2_start && range1_start <= range2_end) return r.RED;
-
-    return r.WHITE;
-}
-
-function doubleParticleCheck(xCoordinate, width, particle1_x, particle1_Width, particle2_x, particle2_width) {
-
-    let color = singleParticleCheck(xCoordinate, xCoordinate + width,
-        particle1_x, particle1_x + particle1_Width);
-
-    if (color == r.WHITE) {
-        color = singleParticleCheck(xCoordinate, xCoordinate + width,
-            particle2_x, particle2_x + particle2_width);
-    }
-
-    return color;
-}
-
-
-function updatePosition(xCoordinate, speed) {
-    return xCoordinate + speed;
-}
-
-function updateDirection(xCoordinate, startValue, endValue, speed) {
-    if (xCoordinate <= startValue || xCoordinate >= endValue) {
-        speed = speed * (-1);
-    }
-    return speed;
-}
-
 
 
 function update() {
 
-    detector1_xCoordinate = updatePosition(detector1_xCoordinate, detector1_change);
-    detector1_change = updateDirection(detector1_xCoordinate, detector1_start,
-        detector1_end, detector1_change);
-    detector1_color = doubleParticleCheck(detector1_xCoordinate, detector1_width, particle1_x, particle1_Width, particle2_x, particle2_width);
+    d1.xCoordinate = s.updatePosition(d1.xCoordinate, d1.change);
+    d1.change =
+        s.updateDirection(
+            d1.xCoordinate,
+            d1.start,
+            d1.end,
+            d1.change);
+    d1.color =
+        s.chooseVdcolor(
+            d1.xCoordinate,
+            d1.width,
+            p1.x,
+            p1.width,
+            p2.x,
+            p2.width);
 
-    detector2_xCoordinate = updatePosition(detector2_xCoordinate, detector2_change);
-    detector2_change = updateDirection(detector2_xCoordinate, detector2_start,
-        detector2_end, detector2_change);
-    detector2_color = doubleParticleCheck(detector2_xCoordinate, detector2_width, particle1_x, particle1_Width, particle2_x, particle2_width);
 
-    horizontalDetector1_yCoordinate = updatePosition(horizontalDetector1_yCoordinate, horizontalDetector1_change);
-    horizontalDetector1_change = updateDirection(horizontalDetector1_yCoordinate, horizontalDetector1_start,
-        horizontalDetector1_end, horizontalDetector1_change);
-    horizontalDetector1_color = singleParticleCheck(horizontalDetector1_yCoordinate, horizontalDetector1_yCoordinate + horizontalDetector1_height,
-        Horizontalparticle1_y, Horizontalparticle1_y + Horizontalparticle1_Height);
+    d2.x =
+        s.updatePosition(
+            d2.x,
+            d2.change);
+    d2.change =
+        s.updateDirection(
+            d2.x,
+            d2.start,
+            d2.end,
+            d2.change);
+    d2.color =
+        s.chooseVdcolor(
+            d2.x,
+            d2.width,
+            p1.x,
+            p1.width,
+            p2.x,
+            p2.width);
+
+
+    const range1_end = s.updatePosition(hd.yCoordinate, hd.height);
+    const range2_end = s.updatePosition(hp.y, hp.height);
+
+    hd.yCoordinate = s.updatePosition(hd.yCoordinate, hd.change);
+    hd.change =
+        s.updateDirection(
+            hd.yCoordinate,
+            hd.start,
+            hd.end,
+            hd.change);
+    hd.color =
+        s.chooseHdColor(
+            hd.yCoordinate,
+            range1_end,
+            hp.y,
+            range2_end);
 
 }
 
@@ -109,14 +100,42 @@ function draw() {
 
     r.BeginDrawing();
     r.ClearBackground(r.BLACK);
-    r.DrawRectangle(particle1_x, yCoordinate, particle1_Width, windowHeight, particle1_Color);
-    r.DrawRectangle(particle2_x, yCoordinate, particle2_width, windowHeight, particle2_Color);
-    r.DrawRectangle(horizontalDetector1_xCoordinate, Horizontalparticle1_y, windowWidth, Horizontalparticle1_Height
-        , Horizontalparticle1_Color);
-    r.DrawRectangle(detector1_xCoordinate, yCoordinate, detector1_width, windowHeight, detector1_color);
-    r.DrawRectangle(detector2_xCoordinate, yCoordinate, detector2_width, windowHeight, detector2_color);
-    r.DrawRectangle(horizontalDetector1_xCoordinate, horizontalDetector1_yCoordinate,
-        windowWidth, horizontalDetector1_height, horizontalDetector1_color);
+    r.DrawRectangle(
+        p1.x,
+        yCoordinate,
+        p1.width,
+        windowHeight,
+        p1.color);
+    r.DrawRectangle(
+        p2.x,
+        yCoordinate,
+        p2.width,
+        windowHeight,
+        p2.color);
+    r.DrawRectangle(
+        hd.xCoordinate,
+        hp.y,
+        windowWidth,
+        hp.height,
+        hp.color);
+    r.DrawRectangle(
+        d1.xCoordinate,
+        yCoordinate,
+        d1.width,
+        windowHeight,
+        d1.color);
+    r.DrawRectangle(
+        d2.x,
+        yCoordinate,
+        d2.width,
+        windowHeight,
+        d2.color);
+    r.DrawRectangle(
+        hd.xCoordinate,
+        hd.yCoordinate,
+        windowWidth,
+        hd.height,
+        hd.color);
     r.EndDrawing();
 
 }
